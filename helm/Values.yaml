@@ -1,0 +1,139 @@
+
+# helm diff -C 3 upgrade --install -n perx perx . -f Values.yaml
+# helm upgrade --install -n perx perx . -f Values.yaml
+
+# kubectl create secret generic perx-mongodb-creds --from-literal=mongodb-passwords='perx-password'
+# kubectl create secret generic perx-nats-creds --from-literal=password='perx-password'
+
+
+web:
+  replicaCount: 1
+
+  revisionHistoryLimit: 3
+  progressDeadlineSeconds: 600
+  terminationGracePeriodSeconds: 30
+
+  rollingUpdate:
+    maxSurge: "25%"
+    maxUnavailable: "25%"
+
+  image:
+    repository: immateo/perx-deps-monitor
+    tag: v0.0.5
+    pullPolicy: IfNotPresent
+
+  service:
+    type: ClusterIP
+    port: 8080
+    annotations: {}
+
+    additionalPorts: []
+
+
+  networkPolicy:
+    enabled: true
+
+  env:
+    MONGO_HOST: perx-mongodb
+    MONGO_PORT: "27017"
+    MONGO_DB: perx
+    MONGO_USER: perx
+
+    NATS_HOST: perx-nats
+    NATS_PORT: "4222"
+    NATS_USER: perx
+
+    PORT: "8080"
+
+  existingSecrets:
+    nats: perx-nats-creds
+    mongo: perx-mongodb-creds
+
+  ingress:
+    enabled: true
+    className: nginx
+    host: ""
+    path: /
+    pathType: Prefix
+    annotations: {}
+
+    tls: null
+
+  probes:
+    livenessPath: /health
+    readinessPath: /ready
+    startupPath: /ready
+
+  # resources:
+  #   requests:
+  #     cpu: 50m
+  #     memory: 64Mi
+  #   limits:
+  #     cpu: 250m
+  #     memory: 256Mi
+
+  podSecurityContext:
+    runAsNonRoot: true
+    seccompProfileType: RuntimeDefault
+    fsGroup: 10001
+
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 10001
+    runAsGroup: 10001
+
+  lifecycle:
+    enabled: true
+    preStopSleepSeconds: 5
+
+  topologySpread:
+    maxSkew: 1
+    topologyKey: kubernetes.io/hostname
+    whenUnsatisfiable: ScheduleAnyway
+
+  podAnnotations: {}
+  deploymentAnnotations: {}
+  extraEnv: []
+  imagePullSecrets: []
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+  configChecksum:
+    enabled: true
+
+
+mongodb:
+  enabled: true
+  auth:
+    enabled: true
+    existingSecret: perx-mongodb-creds
+    username: perx
+    database: perx
+
+  persistence:
+    enabled: true
+    size: 10Gi
+
+
+nats:
+  enabled: true
+  config:
+    merge:
+      authorization:
+        users:
+          - user: perx
+            password: << $NATS_PASSWORD >>
+
+  container:
+    env:
+      NATS_PASSWORD:
+        valueFrom:
+          secretKeyRef:
+            name: perx-nats-creds
+            key: password
+
+  service:
+    ports:
+      nats:
+        enabled: true

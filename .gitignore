@@ -1,0 +1,6 @@
+.env
+.ws
+.tf
+perx-deps-monitor/.idea
+tf-modules/.terraform
+.env

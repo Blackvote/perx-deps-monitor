@@ -1,0 +1,14 @@
+apiVersion: v2
+name: web
+description: Web service
+type: application
+
+version: 0.1.0
+appVersion: "1.0"
+
+maintainers:
+  - name: perx-team
+    email: dev@perx.local
+
+sources:
+  - https://github.com/<org>/<repo>
