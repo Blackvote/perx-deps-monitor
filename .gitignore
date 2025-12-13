@@ -4,3 +4,4 @@
 perx-deps-monitor/.idea
 tf-modules/.terraform
 .env
+*.tgz

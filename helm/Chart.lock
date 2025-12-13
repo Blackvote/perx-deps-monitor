@@ -5,5 +5,8 @@ dependencies:
 - name: nats
   repository: https://nats-io.github.io/k8s/helm/charts/
   version: 2.12.2
-digest: sha256:183fcad439763cd203ed7bf0d1dade2a6503e3529905fb56208b9168d63a33d5
-generated: "2025-12-12T14:36:24.7998347+06:00"
+- name: perx-deps-monitor
+  repository: oci://ghcr.io/blackvote
+  version: 0.1.0
+digest: sha256:53c2f6797853df02153b3a7d0eb6ee98679def1d6772d33c65a8f29149a9abc1
+generated: "2025-12-13T22:29:46.0128253+06:00"
