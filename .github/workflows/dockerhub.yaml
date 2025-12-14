@@ -6,6 +6,9 @@ on:
       - main
     tags:
       - "v*"
+    paths:
+      - "perx-deps-monitor/**"
+      - ".github/workflows/dockerhub.yaml"
   workflow_dispatch: {}
 
 env:
